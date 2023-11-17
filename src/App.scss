@@ -1,0 +1,32 @@
+@use "styles/partials/mixins" as *;
+@use "styles/partials/variables" as *;
+
+* {
+    box-sizing: border-box;
+}
+
+html {
+    scroll-behavior: smooth;
+}
+
+body {
+    @include no-padding-or-margin;
+    font-family: sans-serif;
+    color: $color-1;
+}
+
+ul {
+    list-style: none;
+}
+
+li {
+    list-style: none;
+}
+
+a {
+    text-decoration: none;
+    color: inherit;
+    &:visited {
+        color: inherit;
+    }
+}
