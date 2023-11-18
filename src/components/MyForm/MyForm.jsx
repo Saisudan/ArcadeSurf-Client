@@ -23,6 +23,10 @@ function MyForm(props) {
         setRoom("");
     })
   
+    socket.on("room123", (valueReceived) => {
+      console.log(valueReceived)
+    })
+    
     return (
       <div>
           <form onSubmit={ onSubmit }>
