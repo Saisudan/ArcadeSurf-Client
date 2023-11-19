@@ -55,14 +55,14 @@
     justify-content: space-between;
     align-items: center;
     padding: 0.75rem;
-    background-color: $color-secondary;
-    color: $color-quaternary;
+    background-color: $default-color-2;
+    color: $default-color-3;
     border-radius: 0.325rem;
     border: 0;
     font-weight: 700;
     cursor: pointer;
     &:hover {
-        background-color: $color-secondary-alt;
+        background-color: $default-color-2-alt;
     }
     @include tablet {
         padding: 0.625rem 0.75rem;
@@ -81,9 +81,9 @@
 }
 
 @mixin formInputStyling {
-    border: $color-tertiary-alt 2px solid;
+    border: $default-color-3-alt 2px solid;
     border-radius: 0.25rem;
-    background-color: $color-quaternary-alt;
+    background-color: $default-color-2-alt;
     margin-bottom: 1rem;
     font-size: 0.875rem;
     padding: 0.75rem;
@@ -91,9 +91,9 @@
         padding: 1rem;
     }
     &:focus {
-        border: $color-secondary 2px solid;
+        border: $default-color-2 2px solid;
     }
     &--invalid {
-        border: $color-error 2px solid;
+        border: $default-color-error 2px solid;
     }
 }
