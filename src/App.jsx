@@ -10,7 +10,7 @@ function App() {
       <BrowserRouter>
         {/* <Header/> */}
         <Routes>
-          <Route path='/' element={<SocketTest/>}/>
+          <Route path='/' element={<p>main page</p>}/>
           <Route path='/login' element={<LoginPage/>}/>
           <Route path='/signup' element={<SignupPage/>}/>
           <Route path='/temp' element={<SocketTest/>}/>
