@@ -53,13 +53,10 @@ function CredentialsForm({ version }) {
 
             // Log into their account
             const loginResponse = await axios.post(`${myAPI}/users/login`, userObj);
-            console.log(loginResponse);
-            sessionStorage.setItem("token", loginResponse.data.token);
+            localStorage.setItem("token", loginResponse.data.token);
             navigator("/");
         } catch (error) {
-            console.log(error)
             const serverErrorResponse = error?.response?.data;
-            console.log(serverErrorResponse)
             if (serverErrorResponse) {
                 updateErrorMessage(serverErrorResponse);
             }
