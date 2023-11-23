@@ -1,7 +1,6 @@
 import './App.scss';
 import React, { useState } from 'react';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
-import SocketTest from './components/SocketTest/SocketTest';
 import LoginPage from './pages/LoginPage/LoginPage';
 import SignupPage from './pages/SignupPage/SignupPage';
 import Header from './components/Header/Header';
@@ -27,7 +26,6 @@ function App() {
             <Route path='/signup' element={<SignupPage/>}/>
             <Route path='/lobby' element={<AllLobbiesPage/>}/>
             <Route path='/lobby/:id' element={<LobbyPage/>}/>
-            <Route path='/temp' element={<SocketTest/>}/>
             <Route path='*' element={<NotFound/>}/>
           </Routes>
           <Footer/>
