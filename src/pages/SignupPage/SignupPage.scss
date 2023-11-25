@@ -1,0 +1,7 @@
+@use "../../styles/partials/mixins" as *;
+@use "../../styles/partials/variables" as *;
+
+.signup-page {
+    display: flex;
+    justify-content: center;
+}

@@ -2,6 +2,7 @@ import { socket } from '../../socket';
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import GameFrame from '../GameFrame/GameFrame';
+import "./LobbySocketConnection.scss";
 
 function LobbySocketConnection({ playerName }) {
     const [ room, setRoom ] = useState("");
@@ -47,10 +48,21 @@ function LobbySocketConnection({ playerName }) {
         setPlayers(null);
     });
 
+    socket.on("lost-game", () => {
+        setOutcome("you lost...");
+    })
+
 
     // Show outcome when game is decided
     if (outcome) {
-        return <p>{outcome}</p>;
+        socket.emit("won-game", { roomID: room, username: playerName });
+        return (
+            <section className="lobby-socket">
+                <div className="lobby-socket__bottom">
+                    <h1 className='lobby-socket__outcome'>{outcome}</h1>
+                </div>
+            </section>
+        );
     }
 
     return (

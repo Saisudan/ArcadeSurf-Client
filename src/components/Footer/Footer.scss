@@ -1,0 +1,12 @@
+@use "../../styles/partials/mixins" as *;
+@use "../../styles/partials/variables" as *;
+
+.footer {
+    display: flex;
+    padding: 1rem;
+    background-color: black;
+    justify-content: center;
+    &__text {
+        color: white;
+    }
+}

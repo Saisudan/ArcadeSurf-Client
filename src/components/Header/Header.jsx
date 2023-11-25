@@ -2,6 +2,7 @@ import axios from "axios";
 import { useState, useEffect, useContext } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { UserContext } from "../../App";
+import "./Header.scss";
 
 const myAPI = process.env.REACT_APP_EXPRESS_SERVER_URL;
 
@@ -59,7 +60,7 @@ function Header() {
                                 userAuth === "Authenticated" ? (
                                     <>
                                         <p className="header__username">{userInfo.username}</p>
-                                        <button className="header__nav-button" onClick={logout}>Logout</button>
+                                        <p className="header__nav-button" onClick={logout}>Logout</p>
                                     </>
                                 ) : (
                                     <>

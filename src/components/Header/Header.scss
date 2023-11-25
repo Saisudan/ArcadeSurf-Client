@@ -1,0 +1,39 @@
+@use "../../styles/partials/mixins" as *;
+@use "../../styles/partials/variables" as *;
+
+.header {
+    display: flex;
+    justify-content: space-between;
+    background-color: rgb(172, 112, 0);
+    padding: 0 2rem;
+    &__logo-link {
+
+    }
+    &__logo {
+
+    }
+    &__nav {
+    }
+    &__auth-wrapper {
+        display: flex;
+        gap: 0.5rem;
+        align-items: center;
+    }
+    &__username {
+        font-size: 1.5rem;
+        font-weight: bold;
+    }
+    &__nav-button {
+        text-align: center;
+        padding: 0.5rem;
+        border: 2px rgba(0, 0, 0, 0.616) solid;
+        border-radius: 0.5rem;
+        background-color: orange;
+        font-size: 0.75rem;
+        color: white;
+        &--alt {
+            background-color: white;
+            color: orange;
+        }
+    }
+}

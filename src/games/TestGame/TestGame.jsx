@@ -1,11 +1,10 @@
 import phaser from "phaser";
-import React, { useState, useEffect } from "react";
+import React, { useEffect } from "react";
 
-
-function TestGame(props) {
-    const [ gameState, setGameState ] = useState(null);
+function TestGame({ updateResult }) {
 
     let player;
+    let grounded = 0;
     let coins;
     let platforms;
     let cursors;
@@ -56,31 +55,30 @@ function TestGame(props) {
             //  Player physics
             player.setCollideWorldBounds(true);
         
-            //  Our player animations, turning, walking left and walking right.
+            //  Create Player Animations
             this.anims.create({
-                key: 'left',
-                frames: this.anims.generateFrameNumbers('blue-dude', { start: 1, end: 3 }),
+                key: 'walking',
+                frames: this.anims.generateFrameNumbers('blue-dude', { start: 0, end: 2 }),
                 frameRate: 10,
                 repeat: -1
             });
         
             this.anims.create({
-                key: 'stop',
-                frames: [ { key: 'blue-dude', frame: 0 } ],
+                key: 'standing',
+                frames: [ { key: 'blue-dude', frame: 3 } ],
                 frameRate: 20
             });
         
             this.anims.create({
-                key: 'right',
-                frames: this.anims.generateFrameNumbers('blue-dude', { start: 1, end: 3 }),
-                frameRate: 10,
-                repeat: -1
+                key: 'jumping',
+                frames: [ { key: 'blue-dude', frame: 8 } ],
+                frameRate: 20
             });
-        
+
             this.anims.create({
-                key: 'jump',
-                frames: [ { key: 'blue-dude', frame: 7 } ],
-                duration: 10000
+                key: 'falling',
+                frames: [ { key: 'blue-dude', frame: 0 } ],
+                frameRate: 20
             });
         
             //  Input Events
@@ -106,36 +104,58 @@ function TestGame(props) {
         
         update () {
             if (gameWon) {
-                setGameState("You Won!")
+                updateResult("You Won!")
                 return;
             }
-        
-            if (cursors.left.isDown) {
-                player.setVelocityX(-160);
 
+            // Player Actions and Movement
+            if (cursors.left.isDown) {
+                // Moving left
+                player.setVelocityX(-160);
                 player.flipX = false;
-                player.anims.play('left', true);
-            }
-            else if (cursors.right.isDown) {
+            } else if (cursors.right.isDown) {
+                // Moving right
                 player.setVelocityX(160);
-        
                 player.flipX = true;
-                player.anims.play('right', true);
             } else {
-                player.setVelocityX(0);
-        
-                player.anims.play('stop');
+                // No input, gradually slow down
+                if (player.body.velocity.x >= 10 || player.body.velocity.x <= -10) {
+                    player.setVelocityX(player.body.velocity.x/1.2);
+                } else {
+                    player.setVelocityX(0);
+                }
+            }
+            if (cursors.up.isDown && player.body.touching.down && (grounded > 5)) {
+                // Player is jumping
+                player.setVelocityY(-550);
+            }
+            // Keep track of how long the player is on the ground, for adding landing lag
+            if (player.body.touching.down) {
+                grounded++;
+            } else {
+                grounded = 0;
             }
         
-            if (cursors.up.isDown && player.body.touching.down) {
-                player.setVelocityY(-330);
-                player.anims.play("jump");
+            // Player Animations
+            if (!(player.body.touching.down) && (player.body.velocity.y <= 0)) {
+                // Player is jumping
+                player.anims.play("jumping", true);
+            } else if (!(player.body.touching.down) && (player.body.velocity.y > 0)) {
+                // Player is falling
+                player.anims.play("falling", true);
+            } else if (player.body.velocity.x !== 0) {
+                // Player is walking on the ground
+                player.anims.play("walking", true);
+            } else {
+                // Player is standing still
+                player.anims.play("standing");
             }
         }
     }
     
 
     useEffect(() => {
+        // Game Configuration
         const config = {
             type: phaser.AUTO,
             width: 800,
@@ -143,7 +163,7 @@ function TestGame(props) {
             physics: {
                 default: 'arcade',
                 arcade: {
-                    gravity: { y: 300 },
+                    gravity: { y: 700 },
                     debug: false
                 }
             },
@@ -154,21 +174,12 @@ function TestGame(props) {
             }
         };
 
+        // Create Game
         let game = new phaser.Game(config);
-
         game.scene.add("gamescenes", GameScenes, true);
     }, []);
-
-    if (gameState) {
-        return <p>{gameState}</p>;
-    }
     
-    return (
-        <div className="test-game">
-            <p className="test-game__text">this is a test game</p>
-            <div className="test-game__container" id="test-game"></div>
-        </div>
-    );
+    return <div className="test-game" id="test-game"/>;
 }
 
 export default TestGame;

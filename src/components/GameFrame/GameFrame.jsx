@@ -1,7 +1,10 @@
-function GameFrame({ updateResults }) {
+import TestGame from "../../games/TestGame/TestGame";
+import "./GameFrame.scss";
+
+function GameFrame({ updateResult }) {
     return (
         <div className='game-frame'>
-            game frame
+            <TestGame updateResult={updateResult}/>
         </div>
     );
 }

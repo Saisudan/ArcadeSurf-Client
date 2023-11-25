@@ -1,6 +1,7 @@
 import { useContext } from "react";
 import { Link } from "react-router-dom";
 import { UserContext } from "../../App";
+import "./HomePage.scss";
 
 function HomePage() {
     const { userInfo } = useContext(UserContext);
@@ -11,7 +12,7 @@ function HomePage() {
                 <h1 className="homepage__title">Welcome to ________</h1>
                 <div className="homepage__hero-column">
                     <Link className="homepage__hero-button" to="/lobby">Join a game!</Link>
-                    { userInfo && <button className="homepage__hero-button">Create a lobby!</button> }
+                    { userInfo && <Link className="homepage__hero-button">Create a lobby!</Link> }
                 </div>
             </main>
             <section className="games-list">

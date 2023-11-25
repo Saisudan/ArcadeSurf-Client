@@ -2,6 +2,7 @@ import CredentialsForm from "../../components/CredentialsForm/CredentialsForm";
 import { useContext, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { UserContext } from "../../App";
+import "./LoginPage.scss";
 
 function LoginPage() {
     const { userInfo } = useContext(UserContext);
