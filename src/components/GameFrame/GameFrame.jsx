@@ -1,10 +1,10 @@
-import TestGame from "../../games/TestGame/TestGame";
+import CoinCollectathon from "../../games/CoinCollectathon/CoinCollectathon";
 import "./GameFrame.scss";
 
 function GameFrame({ updateResult }) {
     return (
         <div className='game-frame'>
-            <TestGame updateResult={updateResult}/>
+            <CoinCollectathon updateResult={updateResult}/>
         </div>
     );
 }
