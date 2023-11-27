@@ -1,7 +1,14 @@
-function GameFrame({ updateResults }) {
+import CoinCollectathon from "../../games/CoinCollectathon/CoinCollectathon";
+import "./GameFrame.scss";
+
+function GameFrame({ updateResult, setCurrentSprite, playerSprites }) {
     return (
         <div className='game-frame'>
-            game frame
+            <CoinCollectathon
+                updateResult={updateResult}
+                setCurrentSprite={setCurrentSprite}
+                playerSprites={playerSprites}
+            />
         </div>
     );
 }

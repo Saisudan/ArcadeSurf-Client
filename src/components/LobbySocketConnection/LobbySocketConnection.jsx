@@ -2,11 +2,13 @@ import { socket } from '../../socket';
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import GameFrame from '../GameFrame/GameFrame';
+import "./LobbySocketConnection.scss";
 
 function LobbySocketConnection({ playerName }) {
     const [ room, setRoom ] = useState("");
     const [ players, setPlayers ] = useState(null);
     const [ outcome, setOutcome ] = useState(null);
+    const [ currentSprite, setCurrentSprite ] = useState(null);
     const params = useParams();
     const navigator = useNavigate();
 
@@ -37,6 +39,21 @@ function LobbySocketConnection({ playerName }) {
         navigator("/lobby");
     });
 
+    function updateCurrentSprite(currentData) {
+        const currentPlayer = {
+            x: currentData.x,
+            y: currentData.y,
+            sprite: currentData.sprite,
+            username: playerName,
+            room: room
+        }
+        setCurrentSprite(currentPlayer);
+    }
+    socket.emit("current-player-position", currentSprite);
+
+    socket.on("other-player-positions", () => {
+        // Fill in will other player's data
+    });
 
     function leaveLobby() {
         socket.emit("leave-room", { roomID: room, username: playerName });
@@ -47,10 +64,21 @@ function LobbySocketConnection({ playerName }) {
         setPlayers(null);
     });
 
+    socket.on("lost-game", () => {
+        setOutcome("you lost...");
+    })
+
 
     // Show outcome when game is decided
     if (outcome) {
-        return <p>{outcome}</p>;
+        socket.emit("won-game", { roomID: room, username: playerName });
+        return (
+            <section className="lobby-socket">
+                <div className="lobby-socket__bottom">
+                    <h1 className='lobby-socket__outcome'>{outcome}</h1>
+                </div>
+            </section>
+        );
     }
 
     return (
@@ -58,7 +86,11 @@ function LobbySocketConnection({ playerName }) {
             <div className="lobby-socket__top">
                 <button className='lobby-socket__button' onClick={leaveLobby}>{"<"} Leave</button>
             </div>
-            {room && <GameFrame updateResult={setOutcome} />}
+            {room && <GameFrame 
+                updateResult={setOutcome}
+                setCurrentSprite={updateCurrentSprite}
+                playerSprites={"playerSprites"}
+            />}
             <div className="lobby-socket__bottom">
                 {players && players.map((player) => {
                     return (<p className="lobby-socket__player-name" key={player.user_id}>{player.username}</p>);

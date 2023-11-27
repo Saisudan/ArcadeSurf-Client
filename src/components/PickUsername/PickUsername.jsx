@@ -1,5 +1,6 @@
 import axios from "axios";
 import { useState } from "react";
+import "./PickUsername.scss";
 
 const myAPI = process.env.REACT_APP_EXPRESS_SERVER_URL;
 

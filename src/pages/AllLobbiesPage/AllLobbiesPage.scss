@@ -1,0 +1,18 @@
+@use "../../styles/partials/mixins" as *;
+@use "../../styles/partials/variables" as *;
+
+.all-lobbies {
+    display: flex;
+    flex-direction: column;
+    padding: 2rem;
+    align-items: flex-start;
+    &__button {
+        text-align: center;
+        padding: 0.5rem;
+        border: 2px rgba(0, 0, 0, 0.616) solid;
+        border-radius: 0.5rem;
+        background-color: orange;
+        font-size: 1.5rem;
+        color: white;
+    }
+}

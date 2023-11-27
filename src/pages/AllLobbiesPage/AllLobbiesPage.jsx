@@ -1,4 +1,5 @@
 import { Link } from "react-router-dom";
+import "./AllLobbiesPage.scss";
 
 function AllLobbiesPage() {
     return (

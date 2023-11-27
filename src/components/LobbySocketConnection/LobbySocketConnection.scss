@@ -1,0 +1,33 @@
+@use "../../styles/partials/mixins" as *;
+@use "../../styles/partials/variables" as *;
+
+.lobby-socket {
+    display: flex;
+    flex-direction: column;
+    &__top {
+        display: flex;
+        justify-content: flex-start;
+    }
+    &__button {
+        text-align: center;
+        padding: 0.5rem;
+        border: 2px rgba(0, 0, 0, 0.616) solid;
+        border-radius: 0.5rem;
+        background-color: orange;
+        font-size: 0.75rem;
+        color: white;
+    }
+    &__bottom {
+        display: flex;
+        justify-content: center;
+        gap: 2rem;
+    }
+    &__player-name {
+        font-size: 1.5rem;
+        color: black;
+    }
+    &__outcome {
+        font-size: 3rem;
+        font-weight: 700;
+    }
+}

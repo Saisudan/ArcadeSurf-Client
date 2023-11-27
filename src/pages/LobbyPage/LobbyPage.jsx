@@ -2,6 +2,7 @@ import { useContext, useState, useEffect } from "react";
 import { UserContext } from "../../App";
 import PickUsername from "../../components/PickUsername/PickUsername";
 import LobbySocketConnection from "../../components/LobbySocketConnection/LobbySocketConnection";
+import "./LobbyPage.scss";
 
 function LobbyPage() {
     const { userInfo } = useContext(UserContext);
