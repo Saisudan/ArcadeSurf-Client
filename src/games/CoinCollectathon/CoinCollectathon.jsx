@@ -5,8 +5,9 @@ import "./CoinCollectathon.scss";
 function CoinCollectathon({ updateResult, setCurrentSprite, playerSprites }) {
     const [ lives, setLives ] = useState(3);
     const [ coinsCollected, setCoinsCollected ] = useState(0);
-
+    
     let player;
+    let ghosts;
     let enemy;
     let grounded = 0;
     let coins;
@@ -81,17 +82,20 @@ function CoinCollectathon({ updateResult, setCurrentSprite, playerSprites }) {
         
             // Ground
             platforms.create(400, 625, 'ground').setScale(3).refreshBody();
-        
+
             // Floating platforms
             platforms.create(500, 450, 'ground');
             platforms.create(600, 150, 'ground');
             platforms.create(150, 300, 'ground');
-        
+            
             // Player
             player = this.physics.add.sprite(100, 450, 'blue-dude').setScale(2);
             player.setCollideWorldBounds(true);
             player.flipX = true;
-            
+
+            // Other Player Ghosts
+            ghosts = this.physics.add.staticGroup();
+
             // Enemy
             enemy = this.physics.add.sprite(650, 100, 'dino-enemy').setScale(2);
             enemy.setCollideWorldBounds(true);
@@ -170,11 +174,14 @@ function CoinCollectathon({ updateResult, setCurrentSprite, playerSprites }) {
             // Send info about this player to others
             currentPlayerObj.x = player.body.position.x;
             currentPlayerObj.y = player.body.position.y;
-            currentPlayerObj.sprite = player.frame.nameplayer.body.position.y;
+            currentPlayerObj.sprite = player.frame.name;
             setCurrentSprite(currentPlayerObj);
 
             // Render the other players here
-            // playerSprites
+            ghosts.clear(true, true);
+            playerSprites.forEach((ghost) => {
+                ghosts.create(ghost.x, ghost.y, 'blue-dude', ghost.sprite).setScale(2);
+            });
 
             if (damageState > 0) {
                 // Player took damage
@@ -276,7 +283,7 @@ function CoinCollectathon({ updateResult, setCurrentSprite, playerSprites }) {
             },
             scale: {
               parent: "coin-collectathon",
-              mode: phaser.Scale.FIT
+            //   mode: phaser.Scale.FIT
             }
         };
 

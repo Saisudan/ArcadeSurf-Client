@@ -9,6 +9,7 @@ function LobbySocketConnection({ playerName }) {
     const [ players, setPlayers ] = useState(null);
     const [ outcome, setOutcome ] = useState(null);
     const [ currentSprite, setCurrentSprite ] = useState(null);
+    const [ ghostSprites, setGhostSprites ] = useState([]);
     const params = useParams();
     const navigator = useNavigate();
 
@@ -47,12 +48,32 @@ function LobbySocketConnection({ playerName }) {
             username: playerName,
             room: room
         }
+        socket.emit("current-player-position", currentPlayer);
         setCurrentSprite(currentPlayer);
     }
-    socket.emit("current-player-position", currentSprite);
 
-    socket.on("other-player-positions", () => {
+    function updatePlayerSprites(spriteToAdd) {
+        if (spriteToAdd.username === playerName) {
+            // Current player, skip
+        } else if (ghostSprites.find((ghost) => { return ghost.username === spriteToAdd.username})) {
+            // Ghost already exists in list, update settings
+            const updatedGhost = ghostSprites.find((ghost) => { return ghost.username === spriteToAdd.username});
+            updatedGhost.x = spriteToAdd.x;
+            updatedGhost.y = spriteToAdd.y;
+            updatedGhost.sprite = spriteToAdd.sprite;
+            const newGhostList = ghostSprites.filter((ghost) => { return ghost.username !== spriteToAdd.username});
+            newGhostList.push(updatedGhost);
+            setGhostSprites(newGhostList);
+        } else {
+            // Ghost not in list, add them
+            const newGhostList = [...ghostSprites, spriteToAdd];
+            setGhostSprites(newGhostList);
+        }
+    }
+
+    socket.on("other-player-positions", (receivedData) => {
         // Fill in will other player's data
+        updatePlayerSprites(receivedData);
     });
 
     function leaveLobby() {
@@ -67,7 +88,6 @@ function LobbySocketConnection({ playerName }) {
     socket.on("lost-game", () => {
         setOutcome("you lost...");
     })
-
 
     // Show outcome when game is decided
     if (outcome) {
@@ -89,7 +109,7 @@ function LobbySocketConnection({ playerName }) {
             {room && <GameFrame 
                 updateResult={setOutcome}
                 setCurrentSprite={updateCurrentSprite}
-                playerSprites={"playerSprites"}
+                playerSprites={ghostSprites}
             />}
             <div className="lobby-socket__bottom">
                 {players && players.map((player) => {
