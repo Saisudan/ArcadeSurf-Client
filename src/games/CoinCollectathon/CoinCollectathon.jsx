@@ -2,7 +2,7 @@ import phaser from "phaser";
 import React, { useState, useEffect } from "react";
 import "./CoinCollectathon.scss";
 
-function CoinCollectathon({ updateResult }) {
+function CoinCollectathon({ updateResult, setCurrentSprite, playerSprites }) {
     const [ lives, setLives ] = useState(3);
     const [ coinsCollected, setCoinsCollected ] = useState(0);
 
@@ -18,6 +18,12 @@ function CoinCollectathon({ updateResult }) {
     let currentLives = lives;
     let displayedCoins = Array(coinsCollected).fill(true);
     let currentCoins = coinsCollected;
+
+    let currentPlayerObj = {
+        x: 0,
+        y: 0,
+        sprite: 0
+    }
     
     function collectCoin(player, coin) {
         coin.disableBody(true, true);
@@ -161,6 +167,15 @@ function CoinCollectathon({ updateResult }) {
         }
         
         update () {
+            // Send info about this player to others
+            currentPlayerObj.x = player.body.position.x;
+            currentPlayerObj.y = player.body.position.y;
+            currentPlayerObj.sprite = player.frame.nameplayer.body.position.y;
+            setCurrentSprite(currentPlayerObj);
+
+            // Render the other players here
+            // playerSprites
+
             if (damageState > 0) {
                 // Player took damage
                 damageState--;
