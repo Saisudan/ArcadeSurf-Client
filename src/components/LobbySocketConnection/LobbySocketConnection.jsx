@@ -21,11 +21,6 @@ function LobbySocketConnection({ playerName }) {
         socket.emit("join-room", { roomID: params.id, username: playerName });
     }, [params, playerName]);
 
-    // Send "ready" state
-    useEffect(() => {
-        socket.emit("player-ready", { roomID: params.id, username: playerName });
-    }, [ready]);
-
     // Leave the room
     useEffect(() => {
         if (room === "leaving...") {
@@ -41,6 +36,22 @@ function LobbySocketConnection({ playerName }) {
 
     socket.on("players-in-room", (receivedData) => {
         setPlayers(receivedData);
+    });
+
+    function sendReadySignal() {
+        socket.emit("player-ready", { roomID: params.id, username: playerName });
+    }
+
+    socket.on("confirmed-ready", () => {
+        setReady(true);
+    });
+
+    function sendStartSignal() {
+        socket.emit("start-game", { roomID: room, username: playerName });
+    }
+
+    socket.on("confirmed-start", () => {
+        setGameStart(true);
     });
 
     socket.on("failed-join", () => {
@@ -97,6 +108,19 @@ function LobbySocketConnection({ playerName }) {
         setOutcome("you lost...");
     })
 
+    if (gameStart && !ready) {
+        setTimeout(() => {
+            setTimeout(() => {navigator("/")}, 2000);
+            return (
+                <section className="lobby-socket">
+                    <div className="lobby-socket__preloader">
+                        <h1 className='lobby-socket__preloader-text'>Sorry, you weren't ready in time...</h1>
+                    </div>
+                </section>
+            );
+        }, 0);
+    }
+
     // Show outcome when game is decided
     if (outcome) {
         socket.emit("won-game", { roomID: room, username: playerName });
@@ -124,6 +148,7 @@ function LobbySocketConnection({ playerName }) {
                     :
                     <div className="lobby-socket__preloader">
                         <h3 className="lobby-socket__preloader-text">{loadingText}</h3>
+                        <button className='lobby-socket__button' onClick={sendStartSignal}>Start Game</button>
                     </div>
             )}
             <div className="lobby-socket__bottom">
@@ -138,9 +163,9 @@ function LobbySocketConnection({ playerName }) {
                                     {
                                         (player.username === playerName && !ready)
                                         &&
-                                        <button className="lobby-socket__button" onClick={() => {setReady(true)}}>Ready?</button>
+                                        <button className="lobby-socket__button" onClick={sendReadySignal}>Ready?</button>
                                     }
-                                    {ready && <p className="lobby-socket__ready-text">Ready</p>}
+                                    {(player.username === playerName && ready) && <p className="lobby-socket__ready-text">Ready</p>}
                                 </div>
                             }
                         </div>
