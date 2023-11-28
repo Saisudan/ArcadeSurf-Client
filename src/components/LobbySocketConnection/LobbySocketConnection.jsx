@@ -6,6 +6,9 @@ import "./LobbySocketConnection.scss";
 
 function LobbySocketConnection({ playerName }) {
     const [ room, setRoom ] = useState("");
+    const [ ready, setReady ] = useState(false);
+    const [ gameStart, setGameStart ] = useState(false);
+    const [ loadingText, setLoadingText ] = useState("Getting Ready...");
     const [ players, setPlayers ] = useState(null);
     const [ outcome, setOutcome ] = useState(null);
     const [ currentSprite, setCurrentSprite ] = useState(null);
@@ -17,6 +20,11 @@ function LobbySocketConnection({ playerName }) {
     useEffect(() => {
         socket.emit("join-room", { roomID: params.id, username: playerName });
     }, [params, playerName]);
+
+    // Send "ready" state
+    useEffect(() => {
+        socket.emit("player-ready", { roomID: params.id, username: playerName });
+    }, [ready]);
 
     // Leave the room
     useEffect(() => {
@@ -73,7 +81,7 @@ function LobbySocketConnection({ playerName }) {
 
     socket.on("other-player-positions", (receivedData) => {
         // Fill in will other player's data
-        updatePlayerSprites(receivedData);
+        // updatePlayerSprites(receivedData);
     });
 
     function leaveLobby() {
@@ -106,14 +114,37 @@ function LobbySocketConnection({ playerName }) {
             <div className="lobby-socket__top">
                 <button className='lobby-socket__button' onClick={leaveLobby}>{"<"} Leave</button>
             </div>
-            {room && <GameFrame 
-                updateResult={setOutcome}
-                setCurrentSprite={updateCurrentSprite}
-                playerSprites={ghostSprites}
-            />}
+            {room && (
+                gameStart ?
+                    <GameFrame 
+                        updateResult={setOutcome}
+                        setCurrentSprite={updateCurrentSprite}
+                        playerSprites={ghostSprites}
+                    />
+                    :
+                    <div className="lobby-socket__preloader">
+                        <h3 className="lobby-socket__preloader-text">{loadingText}</h3>
+                    </div>
+            )}
             <div className="lobby-socket__bottom">
                 {players && players.map((player) => {
-                    return (<p className="lobby-socket__player-name" key={player.user_id}>{player.username}</p>);
+                    return (
+                        <div className="lobby-socket__player-wrapper">
+                            <p className="lobby-socket__player-name" key={player.user_id}>{player.username}</p>
+                            {gameStart ?
+                                ""
+                                :
+                                <div className="lobby-socket__ready">
+                                    {
+                                        (player.username === playerName && !ready)
+                                        &&
+                                        <button className="lobby-socket__button" onClick={() => {setReady(true)}}>Ready?</button>
+                                    }
+                                    {ready && <p className="lobby-socket__ready-text">Ready</p>}
+                                </div>
+                            }
+                        </div>
+                    );
                 })}
             </div>
         </section>
