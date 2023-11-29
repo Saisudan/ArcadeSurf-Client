@@ -12,8 +12,7 @@ function LobbySocketConnection({ playerName }) {
     const [ loadingText, setLoadingText ] = useState("Getting Ready...");
     const [ players, setPlayers ] = useState(null);
     const [ outcome, setOutcome ] = useState(null);
-    const [ currentSprite, setCurrentSprite ] = useState(null);
-    const [ ghostSprites, setGhostSprites ] = useState([]);
+    let ghostSprites = [];
     const params = useParams();
     const navigator = useNavigate();
 
@@ -70,44 +69,43 @@ function LobbySocketConnection({ playerName }) {
             room: room
         }
         socket.emit("current-player-position", currentPlayer);
-        setCurrentSprite(currentPlayer); //fix
     }
 
-    function updatePlayerSprites(spriteToAdd) {
-        // use players as a base
-        if (!ghostSprites) {
-            const newGhostList = players.map((player) => {
-                return ({
-                    x: 100,
-                    y: 450,
-                    sprite: 0,
-                    isXFlipped: true,
-                    username: player.username,
-                    room: room
-                });
-            })
-        }
-        if (spriteToAdd.username === playerName) {
+    async function updatePlayerSprites(updatedSprite) {
+        if (updatedSprite.username === playerName) {
             // Current player, skip
-        } else if (ghostSprites.find((ghost) => { return ghost.username === spriteToAdd.username})) {
-            // Ghost already exists in list, update settings
-            const updatedGhost = ghostSprites.find((ghost) => { return ghost.username === spriteToAdd.username});
-            updatedGhost.x = spriteToAdd.x;
-            updatedGhost.y = spriteToAdd.y;
-            updatedGhost.sprite = spriteToAdd.sprite;
-            const newGhostList = ghostSprites.filter((ghost) => { return ghost.username !== spriteToAdd.username});
-            newGhostList.push(updatedGhost);
-            setGhostSprites(newGhostList);
+        } else if (ghostSprites.length === 0 && players !== null && players.length !== 0) {
+            // Use players list as a base
+            const newGhostList = players.filter((player) => {
+                if (player.username === playerName) {
+                    // Current player, skip
+                } else {
+                    return ({
+                        x: 100,
+                        y: 450,
+                        sprite: 0,
+                        isXFlipped: true,
+                        username: player.username,
+                        room: room
+                    });
+                }
+            });
+            newGhostList.forEach((ghost) => { ghostSprites.push(ghost) });
         } else {
-            // Ghost not in list, add them
-            const newGhostList = [...ghostSprites, spriteToAdd];
-            setGhostSprites(newGhostList);
+            // Update ghost settings
+            const ghostIndex = ghostSprites.findIndex((ghost) => { return ghost.username === updatedSprite.username });
+            if (ghostIndex >= 0) {
+                ghostSprites[ghostIndex].x = updatedSprite.x;
+                ghostSprites[ghostIndex].y = updatedSprite.y;
+                ghostSprites[ghostIndex].sprite = updatedSprite.sprite;
+                ghostSprites[ghostIndex].isXFlipped = updatedSprite.isXFlipped;
+            }
         }
     }
 
     socket.on("other-player-positions", (receivedData) => {
         // Fill in will other player's data
-        // updatePlayerSprites(receivedData);
+        updatePlayerSprites(receivedData);
     });
 
     function leaveLobby() {
@@ -170,6 +168,7 @@ function LobbySocketConnection({ playerName }) {
             {room && (
                 gameStart ?
                     <GameFrame
+                        playerName={playerName}
                         updateResult={setOutcome}
                         setCurrentSprite={updateCurrentSprite}
                         otherPlayers={players}

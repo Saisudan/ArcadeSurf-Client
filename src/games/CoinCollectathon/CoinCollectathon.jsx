@@ -2,12 +2,12 @@ import phaser from "phaser";
 import React, { useState, useEffect } from "react";
 import "./CoinCollectathon.scss";
 
-function CoinCollectathon({ updateResult, setCurrentSprite, otherPlayers, playerSprites }) {
+function CoinCollectathon({ playerName, updateResult, setCurrentSprite, otherPlayers, playerSprites }) {
     const [ lives, setLives ] = useState(3);
     const [ coinsCollected, setCoinsCollected ] = useState(0);
     
     let player;
-    let ghosts;
+    let ghosts = [];
     let enemy;
     let grounded = 0;
     let coins;
@@ -90,17 +90,22 @@ function CoinCollectathon({ updateResult, setCurrentSprite, otherPlayers, player
             platforms.create(600, 150, 'ground');
             platforms.create(150, 300, 'ground');
             
+            // Other Player Ghosts
+            otherPlayers.forEach((ghost) => {
+                if (ghost.username === playerName) {
+                    // Current player, skip
+                } else {
+                    let thisGhost = this.physics.add.staticSprite(100, 450, 'blue-dude', 0).setScale(2);
+                    thisGhost.flipX = true;
+                    thisGhost.alpha = 0.5;
+                    ghosts.push(thisGhost);
+                }
+            });
+            
             // Player
             player = this.physics.add.sprite(100, 450, 'blue-dude').setScale(2);
             player.setCollideWorldBounds(true);
             player.flipX = true;
-
-            // Other Player Ghosts
-            ghosts = this.physics.add.staticGroup();
-            otherPlayers.forEach((ghost) => {
-                let currentplayer = ghosts.create(100, 450, 'blue-dude', 0).setScale(2);
-                currentplayer.flipX = true;
-            });
 
             // Enemy
             enemy = this.physics.add.sprite(650, 100, 'dino-enemy').setScale(2);
@@ -155,7 +160,7 @@ function CoinCollectathon({ updateResult, setCurrentSprite, otherPlayers, player
         
             // Input
             cursors = this.input.keyboard.createCursorKeys();
-        
+
             // Add Coins
             coins = this.physics.add.staticGroup();
             coins.create(175, 525, 'coin');
@@ -177,21 +182,25 @@ function CoinCollectathon({ updateResult, setCurrentSprite, otherPlayers, player
         }
         
         update () {
-            // Send info about this player to others
+            // Handle player ghosts
             timer++;
-            if ((timer%10) == 0) {
+            if ((timer%10) === 0) {
+                // Send info about this player to others
                 currentPlayerObj.x = player.body.position.x;
                 currentPlayerObj.y = player.body.position.y;
                 currentPlayerObj.sprite = player.frame.name;
                 currentPlayerObj.isXFlipped = player.flipX;
                 setCurrentSprite(currentPlayerObj);
+                
+                // Update ghosts here
+                if (playerSprites.length === ghosts.length) {
+                    for (let i = 0; i < ghosts.length; i++) {
+                        ghosts[i].setPosition((playerSprites[i].x + 19), (playerSprites[i].y + 24));
+                        ghosts[i].setFrame(playerSprites[i].sprite);
+                        ghosts[i].flipX = playerSprites[i].isXFlipped;
+                    }
+                }
             }
-
-            // Render the other players here
-            // ghosts.clear(true, true);
-            // playerSprites.forEach((ghost) => {
-            //     ghosts.create(ghost.x, ghost.y, 'blue-dude', ghost.sprite).setScale(2);
-            // });
 
             if (damageState > 0) {
                 // Player took damage

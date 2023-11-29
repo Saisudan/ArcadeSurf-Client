@@ -1,10 +1,11 @@
 import CoinCollectathon from "../../games/CoinCollectathon/CoinCollectathon";
 import "./GameFrame.scss";
 
-function GameFrame({ updateResult, setCurrentSprite, otherPlayers, playerSprites }) {
+function GameFrame({ playerName, updateResult, setCurrentSprite, otherPlayers, playerSprites }) {
     return (
         <div className='game-frame'>
             <CoinCollectathon
+                playerName={playerName}
                 updateResult={updateResult}
                 setCurrentSprite={setCurrentSprite}
                 otherPlayers={otherPlayers}
