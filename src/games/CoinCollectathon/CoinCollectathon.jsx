@@ -2,11 +2,12 @@ import phaser from "phaser";
 import React, { useState, useEffect } from "react";
 import "./CoinCollectathon.scss";
 
-function CoinCollectathon({ updateResult, setCurrentSprite, playerSprites }) {
+function CoinCollectathon({ playerName, updateResult, setCurrentSprite, otherPlayers, playerSprites }) {
     const [ lives, setLives ] = useState(3);
     const [ coinsCollected, setCoinsCollected ] = useState(0);
-
+    
     let player;
+    let ghosts = [];
     let enemy;
     let grounded = 0;
     let coins;
@@ -18,11 +19,13 @@ function CoinCollectathon({ updateResult, setCurrentSprite, playerSprites }) {
     let currentLives = lives;
     let displayedCoins = Array(coinsCollected).fill(true);
     let currentCoins = coinsCollected;
+    let timer = 0;
 
     let currentPlayerObj = {
         x: 0,
         y: 0,
-        sprite: 0
+        sprite: 0,
+        isXFlipped: true
     }
     
     function collectCoin(player, coin) {
@@ -81,17 +84,29 @@ function CoinCollectathon({ updateResult, setCurrentSprite, playerSprites }) {
         
             // Ground
             platforms.create(400, 625, 'ground').setScale(3).refreshBody();
-        
+
             // Floating platforms
             platforms.create(500, 450, 'ground');
             platforms.create(600, 150, 'ground');
             platforms.create(150, 300, 'ground');
-        
+            
+            // Other Player Ghosts
+            otherPlayers.forEach((ghost) => {
+                if (ghost.username === playerName) {
+                    // Current player, skip
+                } else {
+                    let thisGhost = this.physics.add.staticSprite(100, 450, 'blue-dude', 0).setScale(2);
+                    thisGhost.flipX = true;
+                    thisGhost.alpha = 0.5;
+                    ghosts.push(thisGhost);
+                }
+            });
+            
             // Player
             player = this.physics.add.sprite(100, 450, 'blue-dude').setScale(2);
             player.setCollideWorldBounds(true);
             player.flipX = true;
-            
+
             // Enemy
             enemy = this.physics.add.sprite(650, 100, 'dino-enemy').setScale(2);
             enemy.setCollideWorldBounds(true);
@@ -145,7 +160,7 @@ function CoinCollectathon({ updateResult, setCurrentSprite, playerSprites }) {
         
             // Input
             cursors = this.input.keyboard.createCursorKeys();
-        
+
             // Add Coins
             coins = this.physics.add.staticGroup();
             coins.create(175, 525, 'coin');
@@ -167,14 +182,25 @@ function CoinCollectathon({ updateResult, setCurrentSprite, playerSprites }) {
         }
         
         update () {
-            // Send info about this player to others
-            currentPlayerObj.x = player.body.position.x;
-            currentPlayerObj.y = player.body.position.y;
-            currentPlayerObj.sprite = player.frame.nameplayer.body.position.y;
-            setCurrentSprite(currentPlayerObj);
-
-            // Render the other players here
-            // playerSprites
+            // Handle player ghosts
+            timer++;
+            if ((timer%10) === 0) {
+                // Send info about this player to others
+                currentPlayerObj.x = player.body.position.x;
+                currentPlayerObj.y = player.body.position.y;
+                currentPlayerObj.sprite = player.frame.name;
+                currentPlayerObj.isXFlipped = player.flipX;
+                setCurrentSprite(currentPlayerObj);
+                
+                // Update ghosts here
+                if (playerSprites.length === ghosts.length) {
+                    for (let i = 0; i < ghosts.length; i++) {
+                        ghosts[i].setPosition((playerSprites[i].x + 19), (playerSprites[i].y + 24));
+                        ghosts[i].setFrame(playerSprites[i].sprite);
+                        ghosts[i].flipX = playerSprites[i].isXFlipped;
+                    }
+                }
+            }
 
             if (damageState > 0) {
                 // Player took damage
@@ -188,6 +214,8 @@ function CoinCollectathon({ updateResult, setCurrentSprite, playerSprites }) {
                 return;
             } else if (gameState) {
                 // Game decided, update parent component's state
+                player.setVelocityX(0);
+                enemy.setVelocityX(0);
                 updateResult(gameState);
                 return;
             }
@@ -276,7 +304,7 @@ function CoinCollectathon({ updateResult, setCurrentSprite, playerSprites }) {
             },
             scale: {
               parent: "coin-collectathon",
-              mode: phaser.Scale.FIT
+            //   mode: phaser.Scale.FIT
             }
         };
 
@@ -289,13 +317,13 @@ function CoinCollectathon({ updateResult, setCurrentSprite, playerSprites }) {
         <div className="coin-collectathon">
             <div className="coin-collectathon__top">
                 <div className="coin-collectathon__lives">
-                    {displayedLives.map(() => {
-                        return <img src="http://localhost:8000/assets/images/blue-dude_life.png" alt="player life" className="coin-collectathon__life-image"/>;
+                    {displayedLives.map((life, index) => {
+                        return <img src="http://localhost:8000/assets/images/blue-dude_life.png" alt="player life" className="coin-collectathon__life-image" key={index}/>;
                     })}
                 </div>
                 <div className="coin-collectathon__coins">
-                    {displayedCoins.map(() => {
-                        return <img src="http://localhost:8000/assets/images/coin.png" alt="coin" className="coin-collectathon__coin-image"/>;
+                    {displayedCoins.map((coin, index) => {
+                        return <img src="http://localhost:8000/assets/images/coin.png" alt="coin" className="coin-collectathon__coin-image" key={index}/>;
                     })}
                 </div>
             </div>
