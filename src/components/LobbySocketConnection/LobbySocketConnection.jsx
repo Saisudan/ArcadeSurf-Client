@@ -8,6 +8,7 @@ function LobbySocketConnection({ playerName }) {
     const [ room, setRoom ] = useState("");
     const [ ready, setReady ] = useState(false);
     const [ gameStart, setGameStart ] = useState(false);
+    const [ gameOver, setGameOver ] = useState(false);
     const [ loadingText, setLoadingText ] = useState("Getting Ready...");
     const [ players, setPlayers ] = useState(null);
     const [ outcome, setOutcome ] = useState(null);
@@ -64,14 +65,28 @@ function LobbySocketConnection({ playerName }) {
             x: currentData.x,
             y: currentData.y,
             sprite: currentData.sprite,
+            isXFlipped: currentData.isXFlipped,
             username: playerName,
             room: room
         }
         socket.emit("current-player-position", currentPlayer);
-        setCurrentSprite(currentPlayer);
+        setCurrentSprite(currentPlayer); //fix
     }
 
     function updatePlayerSprites(spriteToAdd) {
+        // use players as a base
+        if (!ghostSprites) {
+            const newGhostList = players.map((player) => {
+                return ({
+                    x: 100,
+                    y: 450,
+                    sprite: 0,
+                    isXFlipped: true,
+                    username: player.username,
+                    room: room
+                });
+            })
+        }
         if (spriteToAdd.username === playerName) {
             // Current player, skip
         } else if (ghostSprites.find((ghost) => { return ghost.username === spriteToAdd.username})) {
@@ -106,28 +121,42 @@ function LobbySocketConnection({ playerName }) {
 
     socket.on("lost-game", () => {
         setOutcome("you lost...");
-    })
+    });
 
     if (gameStart && !ready) {
-        setTimeout(() => {
-            setTimeout(() => {navigator("/")}, 2000);
-            return (
-                <section className="lobby-socket">
-                    <div className="lobby-socket__preloader">
-                        <h1 className='lobby-socket__preloader-text'>Sorry, you weren't ready in time...</h1>
-                    </div>
-                </section>
-            );
-        }, 0);
-    }
-
-    // Show outcome when game is decided
-    if (outcome) {
-        socket.emit("won-game", { roomID: room, username: playerName });
         return (
             <section className="lobby-socket">
-                <div className="lobby-socket__bottom">
-                    <h1 className='lobby-socket__outcome'>{outcome}</h1>
+                <div className="lobby-socket__top">
+                    <button className='lobby-socket__button' onClick={leaveLobby}>{"<"} Leave</button>
+                </div>
+                <div className="lobby-socket__preloader">
+                    <h1 className='lobby-socket__preloader-text'>Sorry, you weren't ready in time...</h1>
+                </div>
+            </section>
+        );
+    }
+
+    // Check if the outcome has been decided
+    if (outcome) {
+        if (outcome === "You Won!") {
+            socket.emit("won-game", { roomID: room, username: playerName });
+        }
+        setTimeout(() => {setGameOver(true)}, 2000);
+    }
+    // Show end screen
+    if (gameOver) {
+        return (
+            <section className="lobby-socket">
+                <div className="lobby-socket__top">
+                    <button className='lobby-socket__button' onClick={leaveLobby}>{"<"} Leave</button>
+                </div>
+                <div className="lobby-socket__outcome">
+                    <h1 className='lobby-socket__outcome-text'>{outcome}</h1>
+                    {(outcome === "You Won!") ?
+                        <img src="http://localhost:8000/assets/images/blue-dude_life.png" alt="player sprite" className="lobby-socket__outcome-image"/>
+                        :
+                        <img src="http://localhost:8000/assets/images/blue-dude_knocked-down.png" alt="defeated player sprite" className="lobby-socket__outcome-image"/>
+                    }
                 </div>
             </section>
         );
@@ -140,9 +169,10 @@ function LobbySocketConnection({ playerName }) {
             </div>
             {room && (
                 gameStart ?
-                    <GameFrame 
+                    <GameFrame
                         updateResult={setOutcome}
                         setCurrentSprite={updateCurrentSprite}
+                        otherPlayers={players}
                         playerSprites={ghostSprites}
                     />
                     :
@@ -154,8 +184,8 @@ function LobbySocketConnection({ playerName }) {
             <div className="lobby-socket__bottom">
                 {players && players.map((player) => {
                     return (
-                        <div className="lobby-socket__player-wrapper">
-                            <p className="lobby-socket__player-name" key={player.user_id}>{player.username}</p>
+                        <div className={`lobby-socket__player-wrapper${(player.username === playerName) ? " lobby-socket__player-wrapper--current" : ""}`} key={player.user_id}>
+                            <p className="lobby-socket__player-name">{player.username}</p>
                             {gameStart ?
                                 ""
                                 :

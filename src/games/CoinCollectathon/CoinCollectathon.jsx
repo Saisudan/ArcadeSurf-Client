@@ -2,7 +2,7 @@ import phaser from "phaser";
 import React, { useState, useEffect } from "react";
 import "./CoinCollectathon.scss";
 
-function CoinCollectathon({ updateResult, setCurrentSprite, playerSprites }) {
+function CoinCollectathon({ updateResult, setCurrentSprite, otherPlayers, playerSprites }) {
     const [ lives, setLives ] = useState(3);
     const [ coinsCollected, setCoinsCollected ] = useState(0);
     
@@ -19,11 +19,13 @@ function CoinCollectathon({ updateResult, setCurrentSprite, playerSprites }) {
     let currentLives = lives;
     let displayedCoins = Array(coinsCollected).fill(true);
     let currentCoins = coinsCollected;
+    let timer = 0;
 
     let currentPlayerObj = {
         x: 0,
         y: 0,
-        sprite: 0
+        sprite: 0,
+        isXFlipped: true
     }
     
     function collectCoin(player, coin) {
@@ -95,6 +97,10 @@ function CoinCollectathon({ updateResult, setCurrentSprite, playerSprites }) {
 
             // Other Player Ghosts
             ghosts = this.physics.add.staticGroup();
+            otherPlayers.forEach((ghost) => {
+                let currentplayer = ghosts.create(100, 450, 'blue-dude', 0).setScale(2);
+                currentplayer.flipX = true;
+            });
 
             // Enemy
             enemy = this.physics.add.sprite(650, 100, 'dino-enemy').setScale(2);
@@ -172,16 +178,20 @@ function CoinCollectathon({ updateResult, setCurrentSprite, playerSprites }) {
         
         update () {
             // Send info about this player to others
-            currentPlayerObj.x = player.body.position.x;
-            currentPlayerObj.y = player.body.position.y;
-            currentPlayerObj.sprite = player.frame.name;
-            setCurrentSprite(currentPlayerObj);
+            timer++;
+            if ((timer%10) == 0) {
+                currentPlayerObj.x = player.body.position.x;
+                currentPlayerObj.y = player.body.position.y;
+                currentPlayerObj.sprite = player.frame.name;
+                currentPlayerObj.isXFlipped = player.flipX;
+                setCurrentSprite(currentPlayerObj);
+            }
 
             // Render the other players here
-            ghosts.clear(true, true);
-            playerSprites.forEach((ghost) => {
-                ghosts.create(ghost.x, ghost.y, 'blue-dude', ghost.sprite).setScale(2);
-            });
+            // ghosts.clear(true, true);
+            // playerSprites.forEach((ghost) => {
+            //     ghosts.create(ghost.x, ghost.y, 'blue-dude', ghost.sprite).setScale(2);
+            // });
 
             if (damageState > 0) {
                 // Player took damage
@@ -195,6 +205,8 @@ function CoinCollectathon({ updateResult, setCurrentSprite, playerSprites }) {
                 return;
             } else if (gameState) {
                 // Game decided, update parent component's state
+                player.setVelocityX(0);
+                enemy.setVelocityX(0);
                 updateResult(gameState);
                 return;
             }
@@ -296,13 +308,13 @@ function CoinCollectathon({ updateResult, setCurrentSprite, playerSprites }) {
         <div className="coin-collectathon">
             <div className="coin-collectathon__top">
                 <div className="coin-collectathon__lives">
-                    {displayedLives.map(() => {
-                        return <img src="http://localhost:8000/assets/images/blue-dude_life.png" alt="player life" className="coin-collectathon__life-image"/>;
+                    {displayedLives.map((life, index) => {
+                        return <img src="http://localhost:8000/assets/images/blue-dude_life.png" alt="player life" className="coin-collectathon__life-image" key={index}/>;
                     })}
                 </div>
                 <div className="coin-collectathon__coins">
-                    {displayedCoins.map(() => {
-                        return <img src="http://localhost:8000/assets/images/coin.png" alt="coin" className="coin-collectathon__coin-image"/>;
+                    {displayedCoins.map((coin, index) => {
+                        return <img src="http://localhost:8000/assets/images/coin.png" alt="coin" className="coin-collectathon__coin-image" key={index}/>;
                     })}
                 </div>
             </div>
