@@ -2,6 +2,7 @@ import axios from "axios";
 import { useState, useEffect, useContext } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { UserContext } from "../../App";
+import headerLogo from "../../assets/logos/ArcadeSurf-cropped-logo_transparent.png";
 import "./Header.scss";
 
 const myAPI = process.env.REACT_APP_EXPRESS_SERVER_URL;
@@ -50,11 +51,11 @@ function Header() {
     return (
         <header className="header">
             <Link className="header__logo-link" to="/">
-                <img src="" alt="Site Logo" className="header__logo"/>
+                <img src={headerLogo} alt="Site Logo" className="header__logo"/>
             </Link>
             <nav className="header__nav">
                 {
-                    userAuth === "Checking..." ? "hidden" : (
+                    userAuth === "Checking..." ? "" : (
                         <div className="header__auth-wrapper">
                             {
                                 userAuth === "Authenticated" ? (
