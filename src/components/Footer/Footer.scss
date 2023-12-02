@@ -3,10 +3,16 @@
 
 .footer {
     display: flex;
-    padding: 1rem;
+    padding: 2rem;
     background-color: black;
     justify-content: center;
     &__text {
         color: white;
+    }
+    &__image {
+        height: 4rem;
+        @include tablet {
+            height: 5rem;
+        }
     }
 }

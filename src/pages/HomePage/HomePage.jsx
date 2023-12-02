@@ -1,6 +1,7 @@
 import { useContext } from "react";
 import { Link } from "react-router-dom";
 import { UserContext } from "../../App";
+import stackedLogo from "../../assets/logos/ArcadeSurf-stacked-logo.png";
 import "./HomePage.scss";
 
 function HomePage() {
@@ -9,15 +10,14 @@ function HomePage() {
     return (
         <>
             <main className="homepage">
-                <h1 className="homepage__title">ArcadeSurf</h1>
-                <div className="homepage__hero-column">
-                    <Link className="homepage__hero-button" to="/lobby">Join a game!</Link>
-                    { userInfo && <Link className="homepage__hero-button">Create a lobby!</Link> }
-                </div>
+                <img src={stackedLogo} alt="main logo" className="homepage__main-logo"/>
+                <div className="homepage__hero-column"></div>
             </main>
             <section className="games-list">
-                <h2 className="games-list__title">Pick a game to play!</h2>
-                {/* map over games list, display cards */}
+                <h2 className="games-list__title">Play a game!</h2>
+                <Link to="/lobby/1" className="games-list__link">
+                    Multiplayer Match
+                </Link>
             </section>
         </>
     );

@@ -24,7 +24,7 @@ function LobbySocketConnection({ playerName }) {
     // Leave the room
     useEffect(() => {
         if (room === "leaving...") {
-            navigator("/lobby");
+            navigator("/");
         }
     }, [room, navigator]);
 
