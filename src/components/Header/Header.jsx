@@ -2,7 +2,7 @@ import axios from "axios";
 import { useState, useEffect, useContext } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { UserContext } from "../../App";
-import headerLogo from "../../assets/logos/ArcadeSurf-cropped-logo_transparent.png";
+import headerLogo from "../../assets/logos/ArcadeSurf-medium-logo_transparent.png";
 import "./Header.scss";
 
 const myAPI = process.env.REACT_APP_EXPRESS_SERVER_URL;
