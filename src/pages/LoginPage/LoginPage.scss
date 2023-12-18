@@ -1,0 +1,14 @@
+@use "../../styles/partials/mixins" as *;
+@use "../../styles/partials/variables" as *;
+
+.login-page {
+    display: flex;
+    justify-content: center;
+    padding: 5rem 0;
+    @include tablet {
+        padding: 10rem 0;
+    }
+    @include desktop {
+        padding: 15rem 0;
+    }
+}

@@ -1,0 +1,70 @@
+@use "../../styles/partials/mixins" as *;
+@use "../../styles/partials/variables" as *;
+
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: linear-gradient(rgba($color: rgb(153, 0, 255), $alpha: 1), rgba($color: rgb(0, 0, 0), $alpha: 1));
+    padding: 0.5rem;
+    @include tablet {
+        padding: 0 3rem;
+    }
+    @include desktop {
+        padding: 0 7rem;
+    }
+    &__logo-link {
+
+    }
+    &__logo {
+        height: 4rem;
+        // background-image: url("../../assets/logos/ArcadeSurf-cropped-logo_transparent.png");
+        // object-fit: cover;
+        // object-position: center;
+        @include tablet {
+            height: 5rem;
+            // background-image: url("../../assets/logos/ArcadeSurf-medium-logo_transparent.png");
+        }
+        @include desktop {
+            // background-image: url("../../assets/logos/ArcadeSurf-long-logo_transparent.png");
+        }
+    }
+    &__nav {
+    }
+    &__auth-wrapper {
+        display: flex;
+        gap: 0.5rem;
+        align-items: center;
+        @include tablet {
+            gap: 1rem;
+        }
+        @include desktop {
+            gap: 1.5rem;
+        }
+    }
+    &__username {
+        color: #6fc0f9;
+        font-size: 0.75rem;
+        font-weight: bold;
+        @include tablet {
+            font-size: 1rem;
+        }
+        @include desktop {
+            font-size: 1.5rem;
+        }
+    }
+    &__nav-button {
+        text-align: center;
+        font-weight: 700;
+        padding: 0.5rem;
+        border: 2px rgba(0, 0, 0, 0.5) solid;
+        border-radius: 0.5rem;
+        background-color: #6fc0f9;
+        font-size: 0.75rem;
+        color: white;
+        &--alt {
+            background-color: white;
+            color: #6fc0f9;
+        }
+    }
+}

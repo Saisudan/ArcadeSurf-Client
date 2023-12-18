@@ -1,2 +1,2 @@
-# Party Game - Client
+# ArcadeSurf - Client
 ## BrainStation Capstone Project

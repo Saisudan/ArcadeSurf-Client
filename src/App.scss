@@ -12,7 +12,7 @@ html {
 body {
     @include no-padding-or-margin;
     font-family: sans-serif;
-    color: $color-1;
+    color: $default-color-1;
 }
 
 ul {
@@ -29,4 +29,8 @@ a {
     &:visited {
         color: inherit;
     }
+}
+
+.hidden {
+    display: none;
 }
