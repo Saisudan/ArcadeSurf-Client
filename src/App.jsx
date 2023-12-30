@@ -9,6 +9,7 @@ import Footer from './components/Footer/Footer';
 import NotFound from './components/NotFound/NotFound';
 import AllLobbiesPage from './pages/AllLobbiesPage/AllLobbiesPage';
 import LobbyPage from './pages/LobbyPage/LobbyPage';
+import LobbyCreator from './components/LobbyCreator/LobbyCreator';
 
 export const UserContext = React.createContext(null);
 
@@ -26,6 +27,7 @@ function App() {
             <Route path='/signup' element={<SignupPage/>}/>
             <Route path='/lobby' element={<AllLobbiesPage/>}/>
             <Route path='/lobby/:id' element={<LobbyPage/>}/>
+            <Route path='/create-lobby' element={<LobbyCreator/>}/>
             <Route path='*' element={<NotFound/>}/>
           </Routes>
           <Footer/>

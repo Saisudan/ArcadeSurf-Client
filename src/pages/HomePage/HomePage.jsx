@@ -18,6 +18,9 @@ function HomePage() {
                 <Link to="/lobby/1" className="games-list__link">
                     Multiplayer Match
                 </Link>
+                <Link to="/create-lobby" className="games-list__link">
+                    Create a Lobby
+                </Link>
             </section>
         </>
     );
